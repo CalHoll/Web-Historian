@@ -5,7 +5,7 @@ var archive = require('../helpers/archive-helpers');
 
 exports.htmlFetcher = function(url) {
   // get the content at the url, place it in archive.
-}
+};
 
 
 
