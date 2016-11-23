@@ -20,8 +20,7 @@ exports.serveAssets = function(res, asset, callback) {
         if (err) {
           // file doesn't exist in archive!
           // callback ? callback() : exports.send404(res);
-          callback ? callback() : res.writeHead(404, exports.headers);
-          res.end('404: Page not found');
+          callback ? callback() : exports.send404(res);
         } else {
           // exports.sendResponse(res, data);
           res.writeHead(200, exports.headers);
@@ -49,4 +48,8 @@ exports.collectData = function(request, callback) {
   request.on('end', function() {
     callback(data);
   });
+};
+
+exports.send404 = function(res) {
+  exports.sendResponse(res, '404: Page not found', 404);
 };
