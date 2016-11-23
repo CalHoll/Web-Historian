@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 var htmlFetcher = require('../workers/htmlfetcher');
+var request = require('request');  // https://www.npmjs.com/package/request
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -28,20 +29,27 @@ exports.initialize = function(pathsObj) {
 
 exports.readListOfUrls = function(callback) {  // loop through the list?
   fs.readFile(exports.paths.list, function(err, urlList) {
-    // urlList = urlList.split('\n');
+    urlList = urlList.toString().split('\n');
     // console.log(urlList);
-    callback(urlList.toString().split('\n'));
+    if (callback) {
+      callback(urlList);
+    }
+    // callback(urlList.toString().split('\n'));
   });
 };
 
 exports.isUrlInList = function(targetUrl, callback) {
-  exports.readListOfUrls(function(array) {
-    if (callback) {
-      callback(_.contains(array, targetUrl));
-    } else {
-      return _.contains(array, targetUrl);
-    }
+  exports.readListOfUrls(function(urlList) {
+    var found = _.any(urlList, function(site, i) {
+      return site.match(targetUrl);
+    });
+    callback(found);
   });
+    // if (callback) {
+    //   callback(_.contains(urlList, targetUrl));
+    // } else {
+    //   return _.contains(urlList, targetUrl);
+    // }
 };
 
 exports.addUrlToList = function(urlString, callback) {
@@ -51,19 +59,16 @@ exports.addUrlToList = function(urlString, callback) {
 };
 
 exports.isUrlArchived = function(urlString, callback) {
-  fs.exists(exports.paths.archivedSites + '/' + urlString, function (foundIt) {
-    foundIt ? callback(true) : callback(false);
+  var sitePath = path.join(exports.paths.archivedSites, urlString);
+  fs.exists(sitePath, function (foundIt) {
+    callback(foundIt);
   });
 };
 
-exports.downloadUrls = function(urlList) { // return paths.list?
-  list = urlList.split('\n');
-  list.forEach(function(url) {
-    exports.isUrlArchived(url, function(exists) {
-      if (!exists) {
-        // run html fetcher.
-        htmlFetcher.htmlFetcher(url);
-      }
-    });
+exports.downloadUrls = function(urlList) {
+  // list = urlList.split('\n');
+  urlList.forEach(function(url) {
+    if (!url) { return; }
+    request('http://' + url).pipe(fs.createWriteStream(exports.paths.archivedSites + '/' + url));
   });
 };

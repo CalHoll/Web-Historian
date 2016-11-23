@@ -21,7 +21,7 @@ exports.serveAssets = function(res, asset, callback) {
           // file doesn't exist in archive!
           // callback ? callback() : exports.send404(res);
           callback ? callback() : res.writeHead(404, exports.headers);
-          response.end('404: Page not found');
+          res.end('404: Page not found');
         } else {
           // exports.sendResponse(res, data);
           res.writeHead(200, exports.headers);
