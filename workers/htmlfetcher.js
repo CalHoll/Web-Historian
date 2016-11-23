@@ -1,13 +1,12 @@
-// Use the code in `archive-helpers.js` to actually download the urls
+	// Use the code in `archive-helpers.js` to actually download the urls
 // that are waiting.
 
 var archive = require('../helpers/archive-helpers');
+archive.readListOfUrls(archive.downloadUrls);
 
-exports.htmlFetcher = function(url) {
-  // get the content at the url, place it in archive.
-};
-
-
+// exports.htmlFetcher = function(url) {
+//   // get the content at the url, place it in archive.
+// };
 
 // https://github.com/request/request
 
